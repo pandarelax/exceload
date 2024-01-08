@@ -5,6 +5,6 @@ export const development = {
   username: 'sa',
   password: 'root',
   database: 'test',
-  models: [Field, Grid, Record, RecordValue],
   synchronize: true, // Only for development otherwise set to false
+  autoLoadModels: true,
 };
