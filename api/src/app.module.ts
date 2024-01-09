@@ -3,10 +3,21 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ExcelModule } from './excel/excel.module';
-import { development } from './shared/db/sequelize.config';
 
 @Module({
-  imports: [SequelizeModule.forRoot(development), ExcelModule],
+  imports: [
+    SequelizeModule.forRoot({
+      port: 1433,
+      username: 'root',
+      password: 'root',
+      database: 'test',
+      host: 'localhost',
+      dialect: 'mssql',
+      autoLoadModels: true,
+      synchronize: true,
+    }),
+    ExcelModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
