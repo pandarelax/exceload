@@ -1,5 +1,5 @@
 import { Column, Table, Model, HasMany } from 'sequelize-typescript';
-import { Field } from './field.entity';
+import { Field } from './field.model';
 
 @Table({
   tableName: 'grids',

@@ -5,7 +5,7 @@ import {
   ForeignKey,
   BelongsTo,
 } from 'sequelize-typescript';
-import { Grid } from './grid.entity';
+import { Grid } from './grid.model';
 
 @Table({
   tableName: 'records',

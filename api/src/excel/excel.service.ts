@@ -3,8 +3,8 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { Field } from 'src/shared/db/entities/field.entity';
 import { Grid } from 'src/shared/db/entities/grid.entity';
-import { Record } from 'src/shared/db/entities/record.entity';
-import { RecordValue } from 'src/shared/db/entities/recordvalue.entity';
+import { Record } from 'src/shared/db/entities/record.model';
+import { RecordValue } from 'src/shared/db/entities/recordvalue.model';
 import ExcelJs from 'exceljs';
 import fs from 'fs';
 

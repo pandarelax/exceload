@@ -6,8 +6,8 @@ import {
   BelongsTo,
   DataType,
 } from 'sequelize-typescript';
-import { Record } from './record.entity';
-import { Field } from './field.entity';
+import { Record } from './record.model';
+import { Field } from './field.model';
 
 @Table({
   tableName: 'record-values',
