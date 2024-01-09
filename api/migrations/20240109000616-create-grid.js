@@ -19,6 +19,7 @@ module.exports = {
     });
   },
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async down(queryInterface, Sequelize) {
     return await queryInterface.dropTable('grids');
   },
