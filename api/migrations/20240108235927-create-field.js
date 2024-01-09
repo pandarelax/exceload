@@ -19,6 +19,8 @@ module.exports = {
           model: 'grids',
           key: 'id',
         },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
       },
       isPrimary: {
         type: Sequelize.BOOLEAN,
