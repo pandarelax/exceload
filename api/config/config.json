@@ -1,13 +1,11 @@
 {
   "development": {
-    "database": "localhost",
-    "host": "EFEHAN",
+    "database": "test",
+    "host": "localhost",
     "dialect": "mssql",
-    "dialectOptions": {
-      "options": {
-        "instanceName": "SQLEXPRESS"
-      }
-    }
+    "username": "sa",
+    "password": "Ebeninki1327.",
+    "port": 1433
   },
   "test": {
     "username": "root",

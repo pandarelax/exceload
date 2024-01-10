@@ -12,16 +12,12 @@ import { RecordValue } from './shared/db/entities/recordvalue.model';
   imports: [
     SequelizeModule.forRoot({
       dialect: 'mssql',
-      host: 'EFEHAN',
+      host: 'localhost',
       username: 'sa',
-      password: 'root',
-      database: 'localhost',
+      password: 'Ebeninki1327.',
+      database: 'test',
       models: [Field, Grid, Record, RecordValue],
-      dialectOptions: {
-        options: {
-          instanceName: 'MSSQLLOCALSERVER',
-        },
-      },
+      port: 1433,
     }),
     ExcelModule,
   ],
