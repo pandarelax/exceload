@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Sequelize } from 'sequelize-typescript';
-import { Field } from 'src/shared/db/entities/field.entity';
-import { Grid } from 'src/shared/db/entities/grid.entity';
+import { Field } from 'src/shared/db/entities/field.model';
+import { Grid } from 'src/shared/db/entities/grid.model';
 import { Record } from 'src/shared/db/entities/record.model';
 import { RecordValue } from 'src/shared/db/entities/recordvalue.model';
 import ExcelJs from 'exceljs';
-import fs from 'fs';
+import { UUIDV4 } from 'sequelize';
 
 @Injectable()
 export class ExcelService {
@@ -25,70 +25,61 @@ export class ExcelService {
   async processFile(file: Express.Multer.File) {
     try {
       const workbook = new ExcelJs.Workbook();
-      await workbook.xlsx.readFile(file.path);
-
+      await workbook.xlsx.load(file.buffer);
       const worksheet = workbook.worksheets[0];
 
-      await this.sequelize.transaction(async (t) => {
-        // Grid tablosuna veri eklemek
-        const grid = await Grid.create(
+      await this.sequelize.transaction(async (transaction) => {
+        const grid = await this.gridModel.create(
           {
-            name: 'your-grid-name',
+            id: UUIDV4,
+            name: worksheet.name,
             order: 1,
           },
-          { transaction: t },
+          { transaction },
         );
 
         const fields: Field[] = [];
-
-        // Excel dosyasından alanları oku ve fields dizisine ekle
-        worksheet.getRow(1).eachCell((cell, colNumber) => {
-          const field = new Field({
-            name: cell.value,
-            gridId: grid.id,
-            isPrimary: false, // Buraya uygun değerleri ekleyin
-            isUnique: false, // Buraya uygun değerleri ekleyin
-            order: colNumber,
-          });
-
+        worksheet.getRow(1).eachCell(async (cell, colNumber) => {
+          const field = await this.fieldModel.create(
+            {
+              id: UUIDV4,
+              name: cell.value,
+              order: colNumber,
+              gridId: grid.id,
+            },
+            { transaction },
+          );
           fields.push(field);
         });
 
-        // Alanları veritabanına kaydet
-        await Field.bulkCreate<Field>(
-          fields.map((field: Field) => ({ ...field })),
-          { transaction: t },
-        );
-
-        worksheet.eachRow(async (row) => {
-          const record = await Record.create(
+        const records: Record[] = [];
+        const recordValues: RecordValue[] = [];
+        worksheet.getRows(2, worksheet.rowCount).forEach(async (row, index) => {
+          const record = await this.recordModel.create(
             {
+              id: UUIDV4,
+              name: `Record ${index + 1}`,
+              order: index + 1,
               gridId: grid.id,
-              createdAt: new Date(),
             },
-            { transaction: t },
+            { transaction },
           );
+          records.push(record);
 
           row.eachCell(async (cell, colNumber) => {
-            const field = fields.find((f) => f.order === colNumber);
-
-            if (field) {
-              await RecordValue.create(
-                {
-                  recordId: record.id,
-                  fieldId: field.id,
-                  value: cell.value,
-                  createdAt: new Date(),
-                },
-                { transaction: t },
-              );
-            }
+            const recordValue = await this.recordValueModel.create(
+              {
+                id: UUIDV4,
+                value: cell.value,
+                fieldId: fields[colNumber - 1].id,
+                recordId: record.id,
+              },
+              { transaction },
+            );
+            recordValues.push(recordValue);
           });
         });
       });
-
-      fs.unlinkSync(file.path);
-      return console.log('File uploaded successfully');
     } catch (error) {
       console.log(error);
     }
